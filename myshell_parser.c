@@ -65,10 +65,10 @@ void parse(char *token, struct pipeline_command* cline){
     }
 
     while((redirect = strpbrk(token,"<>"))){
-        if(*redirect == "<"){
+        if(strcmp(redirect,"<")==0){
             cline->redirect_in_path = strdup(redirect+1);
         }
-        else{
+        else if(strcmp(redirect,"<")==0){
             cline->redirect_out_path = strdup(redirect+1);
         }
         *redirect = ' ';
@@ -97,9 +97,10 @@ struct pipeline *pipeline_build(const char *command_line){
     token = strtok(line,"|");
 
     do{
+        cline = pipeline_command_init();
         parse(token,cline);
         link(pline,cline);
-    }while(token = strtok(NULL,"|"));
+    }while((token = strtok(NULL,"|")));
 
     free(line);
 
