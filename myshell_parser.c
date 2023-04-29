@@ -77,6 +77,13 @@ void parse(char *token, struct pipeline_command** cline){
     *cline = temp; 
 }
 
+void deleteamp(char *str, char c){
+    char *len = strchr(str,c);
+    if(len){
+        memmove(len,len+1,strlen(len));
+    }
+}
+
 struct pipeline *pipeline_build(const char *command_line){
     struct pipeline* pline;
     struct pipeline_command* cline;
@@ -93,8 +100,7 @@ struct pipeline *pipeline_build(const char *command_line){
 
     if(strstr(line,"&")){
         pline->is_background = true;
-        len = strcspn(line,"&");
-        line[len] = '\0';
+        deleteamp(line,'&');
     }
 
     token = strtok(line,"|");
