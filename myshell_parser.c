@@ -40,8 +40,7 @@ void link(struct pipeline* pline, struct pipeline_command* cline){
 
     if(pline->commands == NULL){
         pline->commands = cline;
-    }
-    else{
+    } else{
         temp = pline->commands;
         while(temp->next != NULL){
             temp = temp->next;
@@ -55,24 +54,25 @@ void parse(char *token, struct pipeline_command* cline){
     char* redirect;
     char* arg;
     int i=0;
-    cline = pipeline_command_init();
+    struct pipeline_command* temp = pipeline_command_init();
 
     arg = strtok(token, " ");
     while(arg != NULL && i < MAX_ARGV_LENGTH-1){
-        cline->command_args[i] = strdup(arg);
+        temp->command_args[i] = strdup(arg);
         i++;
         arg = strtok(NULL," ");
     }
 
     while((redirect = strpbrk(token,"<>"))){
         if(strcmp(redirect,"<")==0){
-            cline->redirect_in_path = strdup(redirect+1);
+            temp->redirect_in_path = strdup(redirect+1);
         }
         else if(strcmp(redirect,"<")==0){
-            cline->redirect_out_path = strdup(redirect+1);
+            temp->redirect_out_path = strdup(redirect+1);
         }
         *redirect = ' ';
     }
+    cline = temp; 
 }
 
 struct pipeline *pipeline_build(const char *command_line){
@@ -87,6 +87,7 @@ struct pipeline *pipeline_build(const char *command_line){
     line = strdup(command_line);
     line[len] = '\0';
     pline = pipeline_init();
+    cline = pipeline_command_init();
 
     if(strstr(line,"&")){
         pline->is_background = true;
