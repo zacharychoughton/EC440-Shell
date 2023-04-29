@@ -74,7 +74,6 @@ void parse(char *token, struct pipeline_command** cline){
         }
         *redirect = ' ';
     }
-    free(cpy);
     *cline = temp; 
 }
 
