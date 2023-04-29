@@ -13,49 +13,71 @@ enum specialchars{
     amp = '&'
 };
 
-struct pipeline* pipeline_init(){
-    struct pipeline* pipe_m = malloc(sizeof(struct pipeline));
+struct pipeline_command* pipeline_command_init(){
     struct pipeline_command *commands_m = malloc(sizeof(struct pipeline_command));
-    int i;
-
+    int i; 
     commands_m->next = NULL;
     commands_m->redirect_in_path = NULL;
     commands_m->redirect_out_path = NULL;
     for(i = 0; i< MAX_ARGV_LENGTH; i++){
-        commands_m->command_args[i] = NULL:
+        commands_m->command_args[i] = NULL;
     }
+    return commands_m;
+}
 
-    pipe_m->commands = commands_m;
+struct pipeline* pipeline_init(){
+    struct pipeline* pipe_m = malloc(sizeof(struct pipeline));
+
+    pipe_m->commands = NULL;
     pipe_m->is_background = false;
 
     return pipe_m;
 }
 
-void parse(char *token, struct pipeline* pline){
-    char* coms, p, temp;
+//Finds next NULL pointer in pline->commands->next and links it to given initialized cline. 
+void link(struct pipeline* pline, struct pipeline_command* cline){
+    struct pipeline_command* temp;
 
-    temp = strtok(token," ");
-
-    if (strstr(token,"<")){
-        p = strchr(token,'<');
-        char redirect[strlen(p+1)];
-        strcpy(redirect,p+1);
+    if(pline->commands == NULL){
+        pline->commands = cline;
     }
-    else if(strstr(token,">")){
-        p = strchr(token,'>');
-        char redirect[strlen(p+1)];
-        strcpy(redirect,p+1);
+    else{
+        temp = pline->commands;
+        while(temp->next != NULL){
+            temp = temp->next;
+        }
+        temp->next = cline;
+    }
+}
+
+//Initializes given cline pointer, populates elements with data from token. 
+void parse(char *token, struct pipeline_command* cline){
+    char* redirect;
+    char* arg;
+    int i=0;
+    cline = pipeline_command_init();
+
+    arg = strtok(token, " ");
+    while(arg != NULL && i < MAX_ARGV_LENGTH-1){
+        cline->command_args[i] = strdup(arg);
+        i++;
+        arg = strtok(NULL," ");
     }
 
-    while(temp){
-        strcpy(pline->commands->command_args[k],temp);
-        temp = strtok(NULL," ");
+    while((redirect = strpbrk(token,"<>"))){
+        if(*redirect == "<"){
+            cline->redirect_in_path = strdup(redirect+1);
+        }
+        else{
+            cline->redirect_out_path = strdup(redirect+1);
+        }
+        *redirect = ' ';
     }
-
 }
 
 struct pipeline *pipeline_build(const char *command_line){
     struct pipeline* pline;
+    struct pipeline_command* cline;
     char* token; 
     char* line; 
     int len;
@@ -75,48 +97,28 @@ struct pipeline *pipeline_build(const char *command_line){
     token = strtok(line,"|");
 
     do{
-        parse(token,pline);
+        parse(token,cline);
+        link(pline,cline);
     }while(token = strtok(NULL,"|"));
+
+    free(line);
 
     return pline;
 }
 
 void pipeline_free(struct pipeline *pipeline){
-    struct pipeline_command* nextcom = pipeline->commands;
+    struct pipeline_command* cline = pipeline->commands;
+    int i;
 
-    while(nextcom != NULL){
-        pipeline->commands = nextcom->next;
-        free(nextcom->command_args);
-        free(nextcom);
-        nextcom = pipeline->commands;
+    while(cline != NULL){
+        for(i = 0; cline->command_args[i] != NULL; i++){
+            free(cline->command_args[i]);
+        }
+        pipeline->commands = cline->next;
+        free(cline->command_args);
+        free(cline);
+        cline = pipeline->commands;
     }
 
     free(pipeline);
 }
-
-//Structures: struct pipeline_command {
-// 	char *command_args[MAX_ARGV_LENGTH]; /* List of pointers to each
-// 						argument for a command. The
-// 						first entry is the command
-// 						name. The last entry is NULL.
-// 						E.g., input "ls -al" is
-// 						equivalent to ["ls", "-al",
-// 						NULL] */
-// 	char *redirect_in_path; /* Name of a file to redirect in from, or NULL
-// 				   if there is no stdin redirect */
-// 	char *redirect_out_path; /* Name of a file to redirect out to, or NULL if
-// 				    there is no stdout redirect */
-// 	struct pipeline_command *next; /* Pointer to the next command in the
-// 					  pipeline. NULL if this is the last
-// 					  command in the pipeline */
-// };
-
-// /*
-//  * Represents a collection of commands that are connected through a pipeline.
-//  */
-// struct pipeline {
-// 	struct pipeline_command *commands; /* Pointer to the first command in
-// 					      the pipeline*/
-// 	bool is_background; /* True if this pipeline should execute in the
-// 			       background */
-// };
