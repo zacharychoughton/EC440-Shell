@@ -53,6 +53,7 @@ void link(struct pipeline* pline, struct pipeline_command* cline){
 void parse(char *token, struct pipeline_command** cline){
     char* redirect=NULL;
     char* arg = NULL;
+    char* cpy = strdup(token);
     int i=0;
     struct pipeline_command* temp = pipeline_command_init();
 
@@ -64,7 +65,7 @@ void parse(char *token, struct pipeline_command** cline){
     }
 
     redirect = NULL;
-    while((redirect = strpbrk(arg,"<>"))){
+    while((redirect = strpbrk(cpy,"<>"))){
         if(strcmp(redirect,"<")==0){
             temp->redirect_in_path = strdup(redirect+1);
         }
@@ -73,6 +74,7 @@ void parse(char *token, struct pipeline_command** cline){
         }
         *redirect = ' ';
     }
+    free(cpy);
     *cline = temp; 
 }
 
