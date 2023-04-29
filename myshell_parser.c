@@ -32,6 +32,25 @@ struct pipeline* pipeline_init(){
 }
 
 void parse(char *token, struct pipeline* pline){
+    char* coms, p, temp;
+
+    temp = strtok(token," ");
+
+    if (strstr(token,"<")){
+        p = strchr(token,'<');
+        char redirect[strlen(p+1)];
+        strcpy(redirect,p+1);
+    }
+    else if(strstr(token,">")){
+        p = strchr(token,'>');
+        char redirect[strlen(p+1)];
+        strcpy(redirect,p+1);
+    }
+
+    while(temp){
+        strcpy(pline->commands->command_args[k],temp);
+        temp = strtok(NULL," ");
+    }
 
 }
 
@@ -49,18 +68,30 @@ struct pipeline *pipeline_build(const char *command_line){
 
     if(strstr(line,"&")){
         pline->is_background = true;
+        len = strcspn(line,"&");
+        line[len] = '\0';
     }
+
+    token = strtok(line,"|");
 
     do{
         parse(token,pline);
-    }while(token = strtok(line,"|"));
+    }while(token = strtok(NULL,"|"));
 
     return pline;
 }
 
 void pipeline_free(struct pipeline *pipeline){
+    struct pipeline_command* nextcom = pipeline->commands;
 
-    free(pipeline); 
+    while(nextcom != NULL){
+        pipeline->commands = nextcom->next;
+        free(nextcom->command_args);
+        free(nextcom);
+        nextcom = pipeline->commands;
+    }
+
+    free(pipeline);
 }
 
 //Structures: struct pipeline_command {
