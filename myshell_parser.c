@@ -6,12 +6,6 @@
 
 // Special Characters: 
 // |, <, >, &, \n, \t, 
-enum specialchars{
-    pipe = '|',
-    rin = '<',
-    rout = '>',
-    amp = '&'
-};
 
 struct pipeline_command* pipeline_command_init(){
     struct pipeline_command *commands_m = malloc(sizeof(struct pipeline_command));
@@ -49,33 +43,102 @@ void link(struct pipeline* pline, struct pipeline_command* cline){
     }
 }
 
-//Initializes given cline pointer, populates elements with data from token. 
-void parse(char *token, struct pipeline_command** cline){
-    char* redirect=NULL;
-    char* arg = NULL;
-    char* cpy = strdup(token);
-    int i=0;
-    struct pipeline_command* temp = pipeline_command_init();
-
-    arg = strtok(token, " ");
-    while(arg != NULL && i < MAX_ARGV_LENGTH-1){
-        temp->command_args[i] = strdup(arg);
-        i++;
-        arg = strtok(NULL," ");
+char* replace(char* str, char* torep, char* toins){
+    int rlen = strlen(torep);
+    int nlen = strlen(toins);
+    int count = 0;
+    char* p = strstr(str, torep);
+    while(p!=NULL){
+        count++;
+        p = strstr(p+rlen, torep);
     }
-
-    redirect = NULL;
-    while((redirect = strpbrk(cpy,"<>"))){
-        if(strcmp(redirect,"<")==0){
-            temp->redirect_in_path = strdup(redirect+1);
+    char* output = (char*) malloc(strlen(str)-count* (rlen - nlen) +1);
+    char *r = output;
+    p = str;
+    while(*p){
+        if(strstr(p, torep) == p){
+            strcpy(r, toins);
+            r += nlen;
+            p += rlen;
         }
-        else if(strcmp(redirect,">")==0){
-            temp->redirect_out_path = strdup(redirect+1);
+        else{ 
+            *r++ = *p++;
         }
-        *redirect = ' ';
     }
-    *cline = temp; 
+    *r = '\0';
+    return output; 
 }
+
+void parse(char* line, struct pipeline_command **cline){
+    struct pipeline_command *cmd = pipeline_command_init();
+
+    if(strstr(line,"<")){
+        char* tokens;
+        char* str = strdup(line);
+        tokens = strtok(str, "<");
+        tokens = strtok(NULL, "<");
+        tokens = strtok(tokens, " \t\n");
+        tokens = strtok(tokens, "|<>&");
+        cmd->redirect_in_path = tokens;
+        str = replace(line,tokens,"");
+        line = strdup(str);
+        free(str);
+    }
+
+    if(strstr(line,">")){
+        char* tokens;
+        char* str = strdup(line);
+        tokens = strtok(str, ">");
+        tokens = strtok(NULL, ">");
+        tokens = strtok(tokens, " \t\n");
+        tokens = strtok(tokens, "|<>&");
+        cmd->redirect_in_path = tokens;
+        str = replace(line,tokens,"");
+        line = strdup(str);
+        free(str);
+    }
+
+    char* tokens;
+    char* s;
+    int i=0;
+
+    while((tokens = strtok_r(line, " \t\n",&line))){
+        while((s = strtok_r(tokens, "|<>&", &tokens))){
+            cmd->command_args[i] = s;
+        }
+        i++;
+    }
+
+    *cline = cmd;
+}
+
+//Initializes given cline pointer, populates elements with data from token. 
+// void parse(char *token, struct pipeline_command** cline){
+//     char* redirect=NULL;
+//     char* arg = NULL;
+//     char* cpy = strdup(token);
+//     int i=0;
+//     struct pipeline_command* temp = pipeline_command_init();
+
+//     arg = strtok(token, " ");
+//     while(arg != NULL && i < MAX_ARGV_LENGTH-1){
+//         temp->command_args[i] = strdup(arg);
+//         i++;
+//         arg = strtok(NULL," ");
+//     }
+
+//     redirect = NULL;
+//     while((redirect = strpbrk(cpy,"<>"))){
+//         if(strcmp(redirect,"<")==0){
+//             temp->redirect_in_path = strdup(redirect+1);
+//         }
+//         else if(strcmp(redirect,">")==0){
+//             temp->redirect_out_path = strdup(redirect+1);
+//         }
+//         *redirect = ' ';
+//     }
+//     *cline = temp; 
+// }
 
 void deleteamp(char *str, char c){
     char *len = strchr(str,c);
@@ -132,3 +195,4 @@ void pipeline_free(struct pipeline *pipeline){
 
     free(pipeline);
 }
+
