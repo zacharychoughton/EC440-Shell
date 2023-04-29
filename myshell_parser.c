@@ -97,7 +97,6 @@ struct pipeline *pipeline_build(const char *command_line){
     token = strtok(line,"|");
 
     do{
-        cline = pipeline_command_init();
         parse(token,cline);
         link(pline,cline);
     }while((token = strtok(NULL,"|")));
