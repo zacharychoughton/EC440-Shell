@@ -167,6 +167,7 @@ struct pipeline *pipeline_build(const char *command_line){
         deleteamp(line,'&');
     }
 
+    save = strdup(line);
     token = strtok(line,"|");
 
     do{
