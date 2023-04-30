@@ -171,7 +171,7 @@ struct pipeline *pipeline_build(const char *command_line){
     do{
         parse(token,&cline);
         link(pline,cline);
-    }while((token = strtok_r(NULL,"|",&token)));
+    }while((token = strtok_r(NULL,"|",&line)));
 
     free(line);
 
