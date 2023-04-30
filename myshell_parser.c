@@ -112,33 +112,6 @@ void parse(char* line, struct pipeline_command **cline){
     *cline = cmd;
 }
 
-//Initializes given cline pointer, populates elements with data from token. 
-// void parse(char *token, struct pipeline_command** cline){
-//     char* redirect=NULL;
-//     char* arg = NULL;
-//     char* cpy = strdup(token);
-//     int i=0;
-//     struct pipeline_command* temp = pipeline_command_init();
-
-//     arg = strtok(token, " ");
-//     while(arg != NULL && i < MAX_ARGV_LENGTH-1){
-//         temp->command_args[i] = strdup(arg);
-//         i++;
-//         arg = strtok(NULL," ");
-//     }
-
-//     redirect = NULL;
-//     while((redirect = strpbrk(cpy,"<>"))){
-//         if(strcmp(redirect,"<")==0){
-//             temp->redirect_in_path = strdup(redirect+1);
-//         }
-//         else if(strcmp(redirect,">")==0){
-//             temp->redirect_out_path = strdup(redirect+1);
-//         }
-//         *redirect = ' ';
-//     }
-//     *cline = temp; 
-// }
 
 void deleteamp(char *str, char c){
     char *len = strchr(str,c);
@@ -182,17 +155,17 @@ struct pipeline *pipeline_build(const char *command_line){
 }
 
 void pipeline_free(struct pipeline *pipeline){
-    struct pipeline_command* cline = pipeline->commands;
-    int i;
+    // struct pipeline_command* cline = pipeline->commands;
+    // int i;
 
-    while(cline != NULL){
-        for(i = 0; cline->command_args[i] != NULL; i++){
-            free(cline->command_args[i]);
-        }
-        struct pipeline_command* next = cline->next;
-        free(cline);
-        cline = next;
-    }
+    // while(cline != NULL){
+    //     for(i = 0; cline->command_args[i] != NULL; i++){
+    //         free(cline->command_args[i]);
+    //     }
+    //     struct pipeline_command* next = cline->next;
+    //     free(cline);
+    //     cline = next;
+    // }
 
     free(pipeline);
 }
