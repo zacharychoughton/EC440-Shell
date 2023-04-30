@@ -182,17 +182,17 @@ struct pipeline *pipeline_build(const char *command_line){
 }
 
 void pipeline_free(struct pipeline *pipeline){
-    // struct pipeline_command* cline = pipeline->commands;
-    // int i;
+    struct pipeline_command* cline = pipeline->commands;
+    int i;
 
-    // while(cline != NULL){
-    //     for(i = 0; cline->command_args[i] != NULL; i++){
-    //         free(cline->command_args[i]);
-    //     }
-    //     struct pipeline_command* next = cline->next;
-    //     free(cline);
-    //     cline = next;
-    // }
+    while(cline != NULL){
+        for(i = 0; cline->command_args[i] != NULL; i++){
+            free(cline->command_args[i]);
+        }
+        struct pipeline_command* next = cline->next;
+        free(cline);
+        cline = next;
+    }
 
     free(pipeline);
 }
