@@ -168,7 +168,7 @@ struct pipeline *pipeline_build(const char *command_line){
     }
 
     save = strdup(line);
-    token = strtok(line,"|");
+    token = strtok_r(line,"|",&save);
 
     do{
         parse(token,&cline);
