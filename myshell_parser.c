@@ -152,6 +152,7 @@ struct pipeline *pipeline_build(const char *command_line){
     struct pipeline_command* cline;
     char* token; 
     char* line; 
+    char* save;
     int len;
 
     //Initialization 
@@ -171,7 +172,7 @@ struct pipeline *pipeline_build(const char *command_line){
     do{
         parse(token,&cline);
         link(pline,cline);
-    }while((token = strtok_r(NULL,"|",&line)));
+    }while((token = strtok_r(NULL,"|",&save)));
 
     free(line);
 
