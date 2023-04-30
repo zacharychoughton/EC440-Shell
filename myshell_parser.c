@@ -79,7 +79,7 @@ void parse(char* line, struct pipeline_command **cline){
         tokens = strtok(NULL, "<");
         tokens = strtok(tokens, " \t\n");
         tokens = strtok(tokens, "|<>&");
-        cmd->redirect_out_path = tokens;
+        cmd->redirect_in_path = tokens;
         str = replace(line,tokens,"");
         line = strdup(str);
         free(str);
@@ -92,7 +92,7 @@ void parse(char* line, struct pipeline_command **cline){
         tokens = strtok(NULL, ">");
         tokens = strtok(tokens, " \t\n");
         tokens = strtok(tokens, "|<>&");
-        cmd->redirect_in_path = tokens;
+        cmd->redirect_out_path = tokens;
         str = replace(line,tokens,"");
         line = strdup(str);
         free(str);
