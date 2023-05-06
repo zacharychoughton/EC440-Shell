@@ -152,19 +152,16 @@ struct pipeline *pipeline_build(const char *command_line){
 }
 
 void pipeline_free(struct pipeline *pipeline){
-    struct pipeline_command* cline = pipeline->commands;
-    int i;
+    // struct pipeline_command* cline = pipeline_command_init();
+    // struct pipeline_command* nline = pipeline_command_init();
 
-    while(cline != NULL){
-        for(i = 0; cline->command_args[i] != NULL; i++){
-            free(cline->command_args[i]);
-            free(cline->redirect_in_path);
-            free(cline->redirect_out_path);
-        }
-        struct pipeline_command* nline = cline->next;
-        free(cline);
-        cline = nline;
-    }
+    // cline = pipeline-> commands;
+
+    // while(cline != NULL){
+    //     nline = cline->next;
+    //     free(cline);
+    //     cline = nline;
+    // }
 
     free(pipeline);
 }
