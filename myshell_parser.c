@@ -158,6 +158,8 @@ void pipeline_free(struct pipeline *pipeline){
     while(cline != NULL){
         for(i = 0; cline->command_args[i] != NULL; i++){
             free(cline->command_args[i]);
+            free(cline->redirect_in_path);
+            free(cline->redirect_out_path);
         }
         struct pipeline_command* next = cline->next;
         free(cline);
