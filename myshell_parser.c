@@ -148,9 +148,6 @@ struct pipeline *pipeline_build(const char *command_line){
         link(pline,cline);
     }while((token = strtok_r(NULL,"|",&save)));
 
-    free(line);
-    free(save);
-
     return pline;
 }
 
