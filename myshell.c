@@ -35,13 +35,13 @@ int execute(struct pipeline *pipeline1, int input, int first, int last){
     if(!child){
         if(pipeline1->commands->redirect_out_path){
             if((fd[1] = creat(pipeline1->commands->redirect_out_path, 0644)) < 0){
-                perror("error: ");
+                perror("ERROR");
                 exit(0);
             }
         }
         if(pipeline1->commands->redirect_in_path){
             if((fd[1] = open(pipeline1->commands->redirect_in_path, O_RDONLY, 0)) < 0){
-                perror("error: ");
+                perror("ERROR");
                 exit(0);
             }
         }
@@ -69,7 +69,7 @@ int execute(struct pipeline *pipeline1, int input, int first, int last){
 
 
     if(execvp(pipeline1->commands->command_args[0], pipeline1->commands->command_args) == -1){
-        perror("error: ");
+        perror("ERROR");
         exit(1); 
     }
 
@@ -119,7 +119,7 @@ int main(int arg, char* argv[]){
         }
 
         if (fflush(NULL)){
-            perror("Error: ");
+            perror("ERROR");
             return errno; 
         }
 
