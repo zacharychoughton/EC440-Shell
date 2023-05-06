@@ -101,7 +101,7 @@ int execute(struct pipeline *pipeline1, int input, int first, int last){
 int main(int arg, char* argv[]){
     char buffer[1024];
     struct pipeline* pipeline1;
-    int isprompt;
+    int isprompt=0;
     char *chars = "-n";
 
     if((arg >1) && (strcmp(argv[1],chars)==0)){

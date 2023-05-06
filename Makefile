@@ -1,7 +1,11 @@
 override CFLAGS := -Wall -Werror -std=gnu99 -O0 -g $(CFLAGS) -I.
 
+myshell: myshell.o myshell_parser.o
+
 # Build the parser .o file
 myshell_parser.o: myshell_parser.c myshell_parser.h
+
+myshell.o: myshell.c
 
 # # Add rules for any additional test programs here
 # test_simple_input : test_simple_input.c myshell_parser.o
