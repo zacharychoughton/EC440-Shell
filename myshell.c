@@ -117,7 +117,7 @@ int main(int arg, char* argv[]){
         else{
             printf("myshell$ ");
         }
-        
+
         if (fflush(NULL)){
             perror("Error: ");
             return errno; 
